@@ -1,0 +1,89 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<title>Smart Campus</title>
+
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<script>
+// Protect page access
+if(sessionStorage.getItem("loggedIn") !== "true"){
+    window.location.href = "login.html";
+}
+</script>
+
+</head>
+
+<body>
+
+<!-- Navbar -->
+
+<nav class="navbar">
+
+<div class="logo">
+<i class="fa fa-graduation-cap"></i> SmartCampus
+</div>
+
+<ul class="nav-links">
+<li class="active"><a href="index.html">Home</a></li>
+<li><a href="about.html">About</a></li>
+<li><a href="request.html">Submit Request</a></li>
+<li><a href="dashboard.html">Dashboard</a></li>
+<li><a href="contact.html">Contact</a></li>
+</ul>
+
+<a href="#" id="logoutBtn" class="login-btn">Logout</a>
+
+</nav>
+
+<!-- Hero Section -->
+
+<section class="hero">
+
+<div class="hero-content">
+
+<h1>
+Smart Campus Service <br>
+Management System
+</h1>
+
+<div class="hero-buttons">
+
+<a href="request.html" class="btn-primary">
+Submit Request
+</a>
+
+<a href="dashboard.html" class="btn-secondary">
+View Dashboard
+</a>
+
+</div>
+
+</div>
+
+</section>
+
+<script>
+
+let logoutBtn = document.getElementById("logoutBtn");
+
+logoutBtn.addEventListener("click", function(e){
+
+e.preventDefault();
+
+// Remove login session
+sessionStorage.removeItem("loggedIn");
+
+// Redirect to login page
+window.location.href = "login.html";
+
+});
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,57 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login - Smart Campus</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<div class="login-page">
+<div class="login-card">
+
+<h2>Login</h2>
+
+<form id="loginForm">
+
+<label>Username</label>
+<input type="text" id="username" placeholder="Enter username" required>
+
+<label>Password</label>
+<input type="password" id="password" placeholder="Enter password" required>
+
+<button type="submit">Login</button>
+
+<p>Don't have an account? <a href="register.html">Register</a></p>
+
+</form>
+
+</div>
+</div>
+
+<script>
+document.getElementById("loginForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    const response = await fetch('http://localhost:5000/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+    });
+
+    const data = await response.json();
+    if (data.success) {
+        localStorage.setItem("user", JSON.stringify(data.user));
+        sessionStorage.setItem("loggedIn", "true");
+        window.location.href = "index.html";
+    } else {
+        alert("Invalid Login");
+    }
+});
+</script>
+</body>
+</html>

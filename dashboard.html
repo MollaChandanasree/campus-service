@@ -1,0 +1,251 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Smart Campus Dashboard</title>
+
+<style>
+
+body{
+font-family:Arial, Helvetica, sans-serif;
+margin:0;
+background:#f4f6f9;
+}
+
+/* Navbar */
+
+.navbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+background:#2c3e50;
+padding:15px 40px;
+color:white;
+}
+
+.logo{
+font-size:22px;
+font-weight:bold;
+}
+
+.nav-links{
+list-style:none;
+display:flex;
+gap:20px;
+}
+
+.nav-links li a{
+color:white;
+text-decoration:none;
+font-size:16px;
+}
+
+.nav-links li.active a{
+font-weight:bold;
+border-bottom:2px solid #fff;
+}
+
+/* Dashboard Title */
+
+.title{
+text-align:center;
+margin-top:30px;
+}
+
+/* Stats Cards */
+
+.stats{
+display:flex;
+justify-content:center;
+gap:30px;
+margin:30px;
+flex-wrap:wrap;
+}
+
+.card{
+background:white;
+padding:25px;
+width:200px;
+border-radius:10px;
+box-shadow:0 3px 10px rgba(0,0,0,0.1);
+text-align:center;
+}
+
+.card h3{
+margin:10px 0;
+font-size:28px;
+}
+
+.total{border-top:5px solid #3498db;}
+.pending{border-top:5px solid #f39c12;}
+.completed{border-top:5px solid #2ecc71;}
+
+/* Table */
+
+table{
+width:90%;
+margin:30px auto;
+border-collapse:collapse;
+background:white;
+box-shadow:0 3px 10px rgba(0,0,0,0.1);
+}
+
+th,td{
+padding:12px;
+text-align:center;
+border-bottom:1px solid #ddd;
+}
+
+th{
+background:#34495e;
+color:white;
+}
+
+.status-pending{
+color:#e67e22;
+font-weight:bold;
+}
+
+.status-completed{
+color:#27ae60;
+font-weight:bold;
+}
+
+/* Buttons */
+
+.btn{
+padding:6px 12px;
+border:none;
+border-radius:4px;
+cursor:pointer;
+}
+
+.complete-btn{
+background:#2ecc71;
+color:white;
+}
+
+.delete-btn{
+background:#e74c3c;
+color:white;
+}
+
+</style>
+
+</head>
+
+<body>
+<a href="viewRequests">View All Requests</a>
+<!-- Navbar -->
+
+<nav class="navbar">
+
+<div class="logo">SmartCampus</div>
+
+<ul class="nav-links">
+<li><a href="index.html">Home</a></li>
+<li><a href="request.html">Submit Request</a></li>
+<li class="active"><a href="dashboard.html">Dashboard</a></li>
+</ul>
+
+</nav>
+
+<h2 class="title">Service Requests Dashboard</h2>
+
+<!-- Stats -->
+
+<div class="stats">
+
+<div class="card total">
+<p>Total Requests</p>
+<h3 id="totalCount">0</h3>
+</div>
+
+<div class="card pending">
+<p>Pending</p>
+<h3 id="pendingCount">0</h3>
+</div>
+
+<div class="card completed">
+<p>Completed</p>
+<h3 id="completedCount">0</h3>
+</div>
+
+</div>
+
+<!-- Table -->
+
+<table id="requestTable">
+
+<tr>
+<th>Name</th>
+<th>Email</th>
+<th>Service</th>
+<th>Location</th>
+<th>Description</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+
+</table>
+
+<div id="welcomeSection">
+    <h1 id="userGreeting">Welcome</h1>
+    <p>Role: <span id="displayRole"></span></p>
+</div>
+
+<table id="requestTable" border="1">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Service</th>
+            <th>Status</th>
+            <th class="admin-only">Actions</th>
+        </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+</table>
+
+<script>
+const user = JSON.parse(localStorage.getItem("user"));
+if (!user) window.location.href = "login.html";
+
+async function loadDashboard() {
+    const res = await fetch('http://localhost:5000/api/requests');
+    const requests = await res.json();
+    const table = document.getElementById("requestTable");
+    
+    // Clear and set header
+    table.innerHTML = `<tr><th>Name</th><th>Service</th><th>Status</th><th class="admin-only">Action</th></tr>`;
+
+    requests.forEach(req => {
+        let row = table.insertRow();
+        row.insertCell(0).innerText = req.name;
+        row.insertCell(1).innerText = req.service;
+        row.insertCell(2).innerText = req.status;
+        
+        let actionCell = row.insertCell(3);
+        actionCell.className = "admin-only";
+        
+        if (user.role === 'Admin' && req.status === 'Pending') {
+            let btn = document.createElement("button");
+            btn.innerText = "Complete";
+            btn.onclick = async () => {
+                await fetch(`http://localhost:5000/api/requests/${req.id}`, { method: 'PUT' });
+                loadDashboard();
+            };
+            actionCell.appendChild(btn);
+        }
+    });
+
+    if (user.role !== 'Admin') {
+        document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+    }
+}
+document.addEventListener("DOMContentLoaded", loadDashboard);
+</script>
+</body>
+</html>
